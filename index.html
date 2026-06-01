@@ -685,7 +685,8 @@
   }
 
   /* ── Upload ── */
-  uploadBtn.addEventListener("click", async () => {
+  uploadBtn.addEventListener("click", async (e) => {
+    e.preventDefault();
     if (!selectedFile || isUploading) return;
 
     isUploading = true;
@@ -703,8 +704,8 @@
         method: "POST",
         body: formData,
         signal: AbortSignal.timeout(60000)
-      });
-
+     
+    });
       showProgress(90);
 
       if (!response.ok) {
@@ -821,7 +822,6 @@
     ts.className = "bubble-time";
     ts.textContent = nowTime();
     bub.appendChild(ts);
-
     wrap.appendChild(av);
     wrap.appendChild(bub);
     if (role === "error") wrap.className = "message error";

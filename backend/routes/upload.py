@@ -47,5 +47,6 @@ async def upload_pdf(
 
     return {
         "success": True,
+        "id": file.filename,
         "chunks": len(chunks)
     }

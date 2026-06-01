@@ -5,7 +5,7 @@ from services.pinecone_service import (
     search_chunks
 )
 
-from services.groq_service import (
+from services.gemini_service import (
     generate_answer
 )
 

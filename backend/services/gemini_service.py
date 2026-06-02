@@ -13,7 +13,7 @@ def generate_answer(
     history
 ):
 
-   prompt = f"""
+    prompt = f"""
 You are a document question-answering assistant.
 
 Your task is to answer ONLY from the provided document context.

@@ -15,7 +15,7 @@ from routes.chat import (
 
 app = FastAPI(
     title="RAG API",
-     redirect_slashes=False 
+    redirect_slashes=False
 )
 
 

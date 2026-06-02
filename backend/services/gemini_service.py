@@ -13,21 +13,29 @@ def generate_answer(
     history
 ):
 
-    prompt = f"""
-You are a helpful document assistant.
+   prompt = f"""
+You are a document question-answering assistant.
 
-Chat History:
+Your task is to answer ONLY from the provided document context.
+
+Previous Conversation:
 {history}
 
-Context:
+Document Context:
 {context}
 
-Question:
+Current Question:
 {question}
 
-Answer only using the context.
-If answer is not found, say:
-'I could not find that information in the document.'
+Rules:
+1. Use only information present in Document Context.
+2. If the answer exists, provide a direct and specific answer.
+3. Do not summarize unless asked.
+4. Do not use outside knowledge.
+5. If answer is not present, reply exactly:
+"I could not find that information in the uploaded document."
+
+Answer:
 """
 
     response = client.chat.completions.create(

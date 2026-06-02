@@ -9,24 +9,25 @@ client = Groq(
 
 def generate_answer(
     context,
-    question
+    question,
+    history
 ):
 
     prompt = f"""
 You are a helpful document assistant.
 
-Use only the provided context.
-
-If the answer is not found,
-say:
-
-"I could not find that information in the uploaded document."
+Chat History:
+{history}
 
 Context:
 {context}
 
 Question:
 {question}
+
+Answer only using the context.
+If answer is not found, say:
+'I could not find that information in the document.'
 """
 
     response = client.chat.completions.create(

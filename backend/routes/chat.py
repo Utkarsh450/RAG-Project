@@ -5,12 +5,17 @@ from services.pinecone_service import (
     search_chunks
 )
 
+from services.memory_service import (
+    add_message,
+    get_history
+)
+
 from services.gemini_service import (
     generate_answer
 )
 
-router = APIRouter()
 
+router = APIRouter()
 
 class QuestionRequest(
     BaseModel
@@ -29,14 +34,27 @@ def ask_question(
 
     context = "\n".join(
         [
-            match["metadata"]["text"]
+            match.metadata["text"]
             for match in matches
         ]
     )
 
+    history = get_history()[-10:]
+
     answer = generate_answer(
         context,
+        payload.question,
+        history
+    )
+
+    add_message(
+        "user",
         payload.question
+    )
+
+    add_message(
+        "assistant",
+        answer
     )
 
     return {

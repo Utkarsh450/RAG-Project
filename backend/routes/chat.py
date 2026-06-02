@@ -39,14 +39,19 @@ def ask_question(
         ]
     )
 
+    if not context.strip():
+        return {
+            "answer": "No relevant information found in the document for your question."
+        }
+
     history = get_history()[-10:]
 
-    formatted_history = "\n".join(
-        [
-            f"{msg['role']}: {msg['content']}"
-            for msg in history
-        ]
-    )
+    formatted_history = ""
+    if history:
+        for msg in history:
+            formatted_history += f"\n{msg['role'].upper()}: {msg['content']}"
+    else:
+        formatted_history = "No previous conversation"
 
     answer = generate_answer(
         context,

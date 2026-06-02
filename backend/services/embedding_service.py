@@ -8,6 +8,7 @@ client = genai.Client(
         "GEMINI_API_KEY"
     )
 )
+print(os.getenv("GEMINI_API_KEY"))
 
 
 def create_embedding(text):

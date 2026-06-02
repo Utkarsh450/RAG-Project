@@ -14,28 +14,29 @@ def generate_answer(
 ):
 
     prompt = f"""
-You are a document question-answering assistant.
+You are a document assistant. Answer questions about the document content accurately.
 
-Your task is to answer ONLY from the provided document context.
-
-Previous Conversation:
-{history}
-
-Document Context:
+<DOCUMENT_CONTEXT>
 {context}
+</DOCUMENT_CONTEXT>
 
-Current Question:
+<CONVERSATION_HISTORY>
+{history}
+</CONVERSATION_HISTORY>
+
+<USER_QUESTION>
 {question}
+</USER_QUESTION>
 
-Rules:
-1. Use only information present in Document Context.
-2. If the answer exists, provide a direct and specific answer.
-3. Do not summarize unless asked.
-4. Do not use outside knowledge.
-5. If answer is not present, reply exactly:
-"I could not find that information in the uploaded document."
+Instructions:
+1. Use ONLY the document context provided above
+2. For generic questions (like "summarize", "what is this about", "overview"), synthesize information from the context
+3. For specific questions, find and cite relevant sections
+4. If information is not in the document, say: "I could not find that information in the document."
+5. Be direct and concise
+6. Never make up information
 
-Answer:
+Answer the question now:
 """
 
     response = client.chat.completions.create(

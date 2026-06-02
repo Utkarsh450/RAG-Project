@@ -1,5 +1,4 @@
 import os
-
 from fastapi import (
     APIRouter,
     UploadFile,
@@ -61,6 +60,10 @@ async def upload_pdf(
             file_path
         )
 
+        print(f"FILE: {file.filename}", flush=True)
+        print(f"TEXT EXTRACTED: {len(text)} chars", flush=True)
+        print(f"FIRST 200 CHARS: {text[:200]}", flush=True)
+
         if not text.strip():
 
             os.remove(file_path)
@@ -72,6 +75,10 @@ async def upload_pdf(
 
         # Create chunks
         chunks = chunk_text(text)
+
+        print(f"CHUNKS CREATED: {len(chunks)}", flush=True)
+        if chunks:
+            print(f"CHUNK 1 SAMPLE: {chunks[0][:100]}...", flush=True)
 
         # Store in Pinecone with metadata
         store_chunks(

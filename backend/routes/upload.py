@@ -1,7 +1,10 @@
+import os
+
 from fastapi import (
     APIRouter,
     UploadFile,
-    File
+    File,
+    HTTPException
 )
 
 from services.pdf_service import (
@@ -24,29 +27,80 @@ async def upload_pdf(
     file: UploadFile = File(...)
 ):
 
-    file_path = (
-        f"uploads/{file.filename}"
-    )
+    try:
 
-    with open(
-        file_path,
-        "wb"
-    ) as f:
+        # PDF Validation
+        if not file.filename.lower().endswith(".pdf"):
+            raise HTTPException(
+                status_code=400,
+                detail="Only PDF files are allowed"
+            )
 
-        content = await file.read()
+        # Create uploads folder if not exists
+        os.makedirs(
+            "uploads",
+            exist_ok=True
+        )
 
-        f.write(content)
+        file_path = (
+            f"uploads/{file.filename}"
+        )
 
-    text = extract_pdf_text(
-        file_path
-    )
+        # Save PDF
+        with open(
+            file_path,
+            "wb"
+        ) as f:
 
-    chunks = chunk_text(text)
+            content = await file.read()
 
-    store_chunks(chunks)
+            f.write(content)
 
-    return {
-        "success": True,
-        "id": file.filename,
-        "chunks": len(chunks)
-    }
+        # Extract text
+        text = extract_pdf_text(
+            file_path
+        )
+
+        if not text.strip():
+
+            os.remove(file_path)
+
+            raise HTTPException(
+                status_code=400,
+                detail="No text found in PDF"
+            )
+
+        # Create chunks
+        chunks = chunk_text(text)
+
+        # Store in Pinecone with metadata
+        store_chunks(
+            chunks,
+            file.filename
+        )
+
+        # Delete local file after processing
+        os.remove(file_path)
+
+        return {
+            "success": True,
+            "document": file.filename,
+            "chunks": len(chunks),
+            "message":
+            "PDF indexed successfully"
+        }
+
+    except HTTPException:
+        raise
+
+    except Exception as e:
+
+        if (
+            os.path.exists(file_path)
+        ):
+            os.remove(file_path)
+
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )

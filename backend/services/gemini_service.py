@@ -12,7 +12,7 @@ def generate_answer(
     question
 ):
 
- prompt = f"""
+    prompt = f"""
 You are a helpful document assistant.
 
 Use only the provided context.

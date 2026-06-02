@@ -41,18 +41,18 @@ def ask_question(
 
     history = get_history()[-10:]
 
-formatted_history = "\n".join(
-    [
-        f"{msg['role']}: {msg['content']}"
-        for msg in history
-    ]
-)
+    formatted_history = "\n".join(
+        [
+            f"{msg['role']}: {msg['content']}"
+            for msg in history
+        ]
+    )
 
-answer = generate_answer(
-    context,
-    payload.question,
-    formatted_history
-)
+    answer = generate_answer(
+        context,
+        payload.question,
+        formatted_history
+    )
 
     add_message(
         "user",

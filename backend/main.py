@@ -1,6 +1,10 @@
 from dotenv import (load_dotenv)
 load_dotenv()
 
+from starlette.middleware.sessions import (
+    SessionMiddleware
+)
+
 from fastapi import (
     FastAPI
 )
@@ -31,6 +35,11 @@ app.add_middleware(
 
 
 
+)
+
+app.add_middleware(
+    SessionMiddleware,
+    secret_key="your-super-secret-key"
 )
 
 from routes.auth import (

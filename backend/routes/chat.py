@@ -2,6 +2,13 @@ from fastapi import (
     APIRouter,
     Depends
 )
+from fastapi.responses import (
+    StreamingResponse
+)
+from services.gemini_service import (
+    generate_answer,
+    generate_answer_stream
+)
 
 from pydantic import BaseModel
 
@@ -104,4 +111,102 @@ def ask_question(
 
     return {
         "answer": answer
+    
     }
+    
+@router.post("/ask-stream")
+def ask_stream(
+    payload: QuestionRequest,
+    current_user=Depends(
+        get_current_user
+    )
+):
+
+    user_id = str(
+        current_user["_id"]
+    )
+
+    matches = search_chunks(
+        payload.question,
+        user_id,
+        payload.document
+    )
+
+    context = "\n".join(
+        [
+            match.metadata["text"]
+            for match in matches
+        ]
+    )
+
+    if not context.strip():
+
+        return StreamingResponse(
+            iter([
+                "No relevant information found in the document for your question."
+            ]),
+            media_type="text/event-stream"
+        )
+
+    history = get_history(
+        user_id
+    )[-10:]
+
+    formatted_history = ""
+
+    if history:
+
+        for msg in history:
+
+            formatted_history += (
+                f"\n{msg['role'].upper()}: "
+                f"{msg['content']}"
+            )
+
+    else:
+
+        formatted_history = (
+            "No previous conversation"
+        )
+
+    return StreamingResponse(
+    stream_and_save(
+        context,
+        payload.question,
+        formatted_history,
+        user_id
+    ),
+    media_type=
+    "text/event-stream"
+)
+    
+def stream_and_save(
+    context,
+    question,
+    history,
+    user_id
+):
+
+    full_answer = ""
+
+    for chunk in generate_answer_stream(
+        context,
+        question,
+        history
+    ):
+
+        full_answer += chunk
+
+        yield chunk
+
+    add_message(
+        user_id,
+        "user",
+        question
+    )
+
+    add_message(
+        user_id,
+        "assistant",
+        full_answer
+    )

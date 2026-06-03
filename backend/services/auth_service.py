@@ -159,3 +159,62 @@ def logout_user(
     )
 
     return True
+
+def get_or_create_google_user(
+    email
+):
+
+    user = (
+        user_collection.find_one(
+            {
+                "email": email
+            }
+        )
+    )
+
+    if user:
+        return user
+
+    result = (
+        user_collection.insert_one(
+            {
+                "email": email,
+                "google_user": True
+            }
+        )
+    )
+
+    return (
+        user_collection.find_one(
+            {
+                "_id":
+                result.inserted_id
+            }
+        )
+    )
+def get_or_create_github_user(
+    email
+):
+
+    user = user_collection.find_one(
+        {
+            "email": email
+        }
+    )
+
+    if user:
+        return user
+
+    result = user_collection.insert_one(
+        {
+            "email": email,
+            "github_user": True
+        }
+    )
+
+    return user_collection.find_one(
+        {
+            "_id":
+            result.inserted_id
+        }
+    )

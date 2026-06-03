@@ -23,6 +23,8 @@ export const AuthProvider = ({ children }) => {
 
       try {
         const userData = await authService.getMe();
+        console.log("user data", userData);
+        
 
         setUser(userData);
       } catch {
@@ -42,6 +44,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (accessToken, refreshToken) => {
+    console.log("accessToken", accessToken, "refreshToken", refreshToken);
     localStorage.setItem("accessToken", accessToken);
 
     localStorage.setItem("refreshToken", refreshToken);

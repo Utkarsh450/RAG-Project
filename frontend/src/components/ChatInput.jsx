@@ -1,208 +1,232 @@
 import { useState } from "react";
-
 import { toast } from "react-hot-toast";
-
 import { chatService } from "../services/chatService";
 
 export default function ChatInput({
-
-    selectedPdf,
-
-    setMessages,
-
-    asking,
-
-    setAsking
-
+  selectedPdf,
+  setMessages,
+  asking,
+  setAsking,
 }) {
+  const [question, setQuestion] = useState("");
 
-    const [question,
-        setQuestion] =
-        useState("");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-    const handleSubmit =
-        async (e) => {
+    if (!question.trim()) return;
 
-            e.preventDefault();
+    if (!selectedPdf) {
+      toast.error(
+        "Please upload and select a PDF first."
+      );
+      return;
+    }
 
-            if (
-                !question.trim()
-            ) {
-                return;
-            }
+    const currentQuestion = question;
 
-            if (
-                !selectedPdf
-            ) {
+    setQuestion("");
 
-                toast.error(
-                    "Please upload and select a PDF first."
-                );
+    setMessages((prev) => [
+      ...prev,
+      {
+        role: "user",
+        content: currentQuestion,
+      },
+    ]);
 
-                return;
-            }
+    try {
+      setAsking(true);
 
-            const currentQuestion =
-                question;
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: "",
+        },
+      ]);
 
-            setQuestion("");
+      const response =
+        await chatService.streamQuestion(
+          currentQuestion,
+          selectedPdf.name
+        );
 
-            setMessages(
-                prev => [
-                    ...prev,
-                    {
-                        role: "user",
-                        content:
-                            currentQuestion
-                    }
-                ]
-            );
+      if (!response.ok) {
+        throw new Error(
+          "Failed to stream response"
+        );
+      }
 
-            try {
+      const reader =
+        response.body.getReader();
 
-                setAsking(
-                    true
-                );
+      const decoder =
+        new TextDecoder();
 
-                const response =
-                    await chatService.askQuestion(
-                        currentQuestion,
+      let fullAnswer = "";
 
+      while (true) {
+        const {
+          done,
+          value,
+        } = await reader.read();
 
-                        selectedPdf.name
-                    );
+        if (done) {
+          break;
+        }
 
-                setMessages(
-                    prev => [
-                        ...prev,
-                        {
-                            role:
-                                "assistant",
+        const chunk =
+          decoder.decode(value);
 
-                            content:
-                                response.answer
-                        }
-                    ]
-                );
+        fullAnswer += chunk;
 
-            } catch (
-                error
-            ) {
+        setMessages((prev) => {
+          const updated = [...prev];
 
-                console.error(
-                    error
-                );
+          updated[
+            updated.length - 1
+          ] = {
+            role: "assistant",
+            content: fullAnswer,
+          };
 
-                toast.error(
-                    error?.response?.data?.detail ||
-                    "Failed to get response"
-                );
+          return updated;
+        });
+      }
+    } catch (error) {
+      console.error(error);
 
-                setMessages(
-                    prev => [
-                        ...prev,
-                        {
-                            role:
-                                "assistant",
+      toast.error(
+        error?.message ||
+          "Failed to get response"
+      );
 
-                            content:
-                                "Sorry, something went wrong while processing your request."
-                        }
-                    ]
-                );
+      setMessages((prev) => {
+        const updated = [...prev];
 
-            } finally {
-
-                setAsking(
-                    false
-                );
-            }
+        updated[
+          updated.length - 1
+        ] = {
+          role: "assistant",
+          content:
+            "Sorry, something went wrong while processing your request.",
         };
 
-    return (
+        return updated;
+      });
+    } finally {
+      setAsking(false);
+    }
+  };
 
-        <div
-            className="
-            border-t
-            bg-white
-            p-4
+  return (
+    <div
+      className="px-4 py-4"
+      style={{
+        borderTop:
+          "0.5px solid rgba(255,255,255,0.07)",
+        background:
+          "rgba(255,255,255,0.02)",
+      }}
+    >
+      <form
+        onSubmit={handleSubmit}
+        className="
+          max-w-4xl
+          mx-auto
+          flex
+          items-center
+          gap-3
         "
+      >
+        <div
+          className="
+            flex-1
+            flex
+            items-center
+            gap-2
+            rounded-2xl
+            px-4
+            py-2.5
+            transition-all
+          "
+          style={{
+            background:
+              "rgba(255,255,255,0.05)",
+            border:
+              "0.5px solid rgba(255,255,255,0.1)",
+          }}
         >
-
-            <form
-                onSubmit={
-                    handleSubmit
-                }
-                className="
-                flex
-                gap-3
+          <input
+            type="text"
+            value={question}
+            onChange={(e) =>
+              setQuestion(
+                e.target.value
+              )
+            }
+            placeholder="Ask a question about your PDF..."
+            disabled={asking}
+            className="
+              flex-1
+              p-2
+              bg-zinc-50
+              shadow
+              shadow-md
+              text-sm
+              outline-none
+              text-zinc-800
+              disabled:opacity-50
             "
-            >
-
-                <input
-                    type="text"
-
-                    value={
-                        question
-                    }
-
-                    onChange={
-                        (e) =>
-                            setQuestion(
-                                e.target.value
-                            )
-                    }
-
-                    placeholder="
-                    Ask a question about your PDF...
-                    "
-
-                    disabled={
-                        asking
-                    }
-
-                    className="
-                    flex-1
-                    border
-                    rounded-xl
-                    px-4
-                    py-3
-                    outline-none
-                    focus:ring-2
-                    focus:ring-violet-500
-                    disabled:bg-gray-100
-                "
-                />
-
-                <button
-                    type="submit"
-
-                    disabled={
-                        asking
-                    }
-
-                    className="
-                    px-6
-                    rounded-xl
-                    bg-violet-600
-                    text-white
-                    hover:bg-violet-700
-                    disabled:opacity-50
-                    disabled:cursor-not-allowed
-                "
-                >
-
-                    {
-                        asking
-                            ? "Thinking..."
-                            : "Send"
-                    }
-
-                </button>
-
-            </form>
-
+          />
         </div>
 
-    );
+        <button
+          type="submit"
+          disabled={
+            asking ||
+            !question.trim()
+          }
+          className="
+            flex
+            items-center
+            justify-center
+            gap-2
+            px-5
+            py-2.5
+            rounded-2xl
+            text-sm
+            font-medium
+            text-white
+            transition-all
+          "
+          style={{
+            background:
+              asking ||
+              !question.trim()
+                ? "rgba(99,102,241,0.3)"
+                : "linear-gradient(135deg,#6366f1,#8b5cf6)",
+          }}
+        >
+          {asking
+            ? "Streaming..."
+            : "Send"}
+        </button>
+      </form>
+
+      <p
+        className="
+          text-center
+          mt-2
+          text-xs
+        "
+        style={{
+          color:
+            "rgba(255,255,255,0.2)",
+        }}
+      >
+        Responses are based on your uploaded PDF content
+      </p>
+    </div>
+  );
 }

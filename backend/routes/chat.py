@@ -1,6 +1,7 @@
 from fastapi import (
     APIRouter,
-    Depends
+    Depends,
+    Query
 )
 from fastapi.responses import (
     StreamingResponse
@@ -19,10 +20,6 @@ from services.pinecone_service import (
 from services.memory_service import (
     add_message,
     get_history
-)
-
-from services.gemini_service import (
-    generate_answer
 )
 
 from services.current_user_service import (
@@ -71,7 +68,8 @@ def ask_question(
         }
 
     history = get_history(
-        user_id
+        user_id,
+        payload.document
     )[-10:]
 
     formatted_history = ""
@@ -99,12 +97,14 @@ def ask_question(
 
     add_message(
         user_id,
+        payload.document,
         "user",
         payload.question
     )
 
     add_message(
         user_id,
+        payload.document,
         "assistant",
         answer
     )
@@ -149,7 +149,8 @@ def ask_stream(
         )
 
     history = get_history(
-        user_id
+        user_id,
+        payload.document
     )[-10:]
 
     formatted_history = ""
@@ -174,7 +175,8 @@ def ask_stream(
         context,
         payload.question,
         formatted_history,
-        user_id
+        user_id,
+        payload.document
     ),
     media_type=
     "text/event-stream"
@@ -184,7 +186,8 @@ def stream_and_save(
     context,
     question,
     history,
-    user_id
+    user_id,
+    document_name
 ):
 
     full_answer = ""
@@ -201,12 +204,38 @@ def stream_and_save(
 
     add_message(
         user_id,
+        document_name,
         "user",
         question
     )
 
     add_message(
         user_id,
+        document_name,
         "assistant",
         full_answer
+    
     )
+@router.get("/chat-history")
+def chat_history(
+    document: str,
+    current_user=Depends(
+        get_current_user
+    )
+):
+
+    user_id = str(
+        current_user["_id"]
+    )
+
+    print("DOCUMENT:", document)
+    print("USER:", user_id)
+
+    history = get_history(
+        user_id,
+        document
+    )
+
+    print("HISTORY:", history)
+
+    return history

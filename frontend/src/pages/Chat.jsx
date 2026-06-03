@@ -4,6 +4,10 @@ import Header from "../components/Header";
 import UploadPanel from "../components/UploadPanel";
 import ChatMessages from "../components/ChatMessages";
 import ChatInput from "../components/ChatInput";
+import { useEffect } from "react";
+import { chatService } from "../services/chatService";
+
+import { documentService } from "../services/documentService";
 
 export default function Chat() {
   const [pdfs, setPdfs] = useState([]);
@@ -15,6 +19,66 @@ export default function Chat() {
   const [uploading, setUploading] = useState(false);
 
   const [asking, setAsking] = useState(false);
+  const loadHistory =
+    async (
+        documentName
+    ) => {
+
+        try {
+
+            const history =
+                await chatService.getHistory(
+                    documentName
+                );
+
+            setMessages(
+                history
+            );
+
+        } catch (
+            error
+        ) {
+
+            console.error(
+                error
+            );
+        }
+    };
+  const loadDocuments = async () => {
+    try {
+      const docs = await documentService.getDocuments();
+
+      const formattedDocs = docs.map((doc) => ({
+        id: doc._id,
+        name: doc.document_name,
+      }));
+
+      setPdfs(formattedDocs);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  useEffect(() => {
+    loadDocuments();
+  }, []);
+  useEffect(() => {
+
+    if (
+        selectedPdf
+    ) {
+
+        loadHistory(
+            selectedPdf.name
+        );
+
+    } else {
+
+        setMessages(
+            []
+        );
+    }
+
+}, [selectedPdf]);
   return (
     <div
       className="
@@ -54,17 +118,14 @@ export default function Chat() {
         >
           <ChatMessages messages={messages} asking={asking} />
 
-       <ChatInput
-    selectedPdf={selectedPdf}
-    setMessages={setMessages}
-    asking={asking}
-    setAsking={setAsking}
-/>
+          <ChatInput
+            selectedPdf={selectedPdf}
+            setMessages={setMessages}
+            asking={asking}
+            setAsking={setAsking}
+          />
         </div>
       </main>
     </div>
   );
-  
-  
-  
 }

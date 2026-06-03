@@ -16,6 +16,9 @@ from routes.upload import (
 from routes.chat import (
     router as chat_router
 )
+from routes.document import (
+    router as document_router
+)
 
 app = FastAPI(
     title="RAG API",
@@ -53,6 +56,11 @@ app.include_router(
 
 app.include_router(
     upload_router,
+    prefix="/api"
+)
+
+app.include_router(
+    document_router,
     prefix="/api"
 )
 

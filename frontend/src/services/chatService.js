@@ -19,34 +19,51 @@ export const chatService = {
         return response.data;
     },
 
+    getHistory: async (
+        document
+    ) => {
+
+        const response =
+            await api.get(
+                "/chat-history",
+                {
+                    params: {
+                        document
+                    }
+                }
+            );
+
+        return response.data;
+    },
+
     streamQuestion: async (
-    question,
-    document
-) => {
+        question,
+        document
+    ) => {
 
-    const token =
-        localStorage.getItem(
-            "accessToken"
+        const token =
+            localStorage.getItem(
+                "accessToken"
+            );
+
+        return fetch(
+            "http://localhost:8000/api/ask-stream",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                    "application/json",
+
+                    Authorization:
+                    `Bearer ${token}`
+                },
+
+                body: JSON.stringify({
+                    question,
+                    document
+                })
+            }
         );
-
-    return fetch(
-        "http://localhost:8000/api/ask-stream",
-        {
-            method: "POST",
-
-            headers: {
-                "Content-Type":
-                "application/json",
-
-                Authorization:
-                `Bearer ${token}`
-            },
-
-            body: JSON.stringify({
-                question,
-                document
-            })
-        }
-    );
-}
+    }
 };

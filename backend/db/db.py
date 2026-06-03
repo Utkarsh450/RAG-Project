@@ -19,3 +19,6 @@ user_collection = db["users"]
 refresh_token_collection = (
     db["refresh_tokens"]
 )
+document_collection = (
+    db["documents"]
+)

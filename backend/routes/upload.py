@@ -1,9 +1,11 @@
 import os
+
 from fastapi import (
     APIRouter,
     UploadFile,
     File,
-    HTTPException
+    HTTPException,
+    Depends
 )
 
 from services.pdf_service import (
@@ -18,24 +20,35 @@ from services.pinecone_service import (
     store_chunks
 )
 
+from services.current_user_service import (
+    get_current_user
+)
+
 router = APIRouter()
 
 
 @router.post("/upload")
 async def upload_pdf(
-    file: UploadFile = File(...)
+    file: UploadFile = File(...),
+    current_user=Depends(
+        get_current_user
+    )
 ):
+
+    user_id = str(
+        current_user["_id"]
+    )
 
     try:
 
-        # PDF Validation
-        if not file.filename.lower().endswith(".pdf"):
+        if not file.filename.lower().endswith(
+            ".pdf"
+        ):
             raise HTTPException(
                 status_code=400,
                 detail="Only PDF files are allowed"
             )
 
-        # Create uploads folder if not exists
         os.makedirs(
             "uploads",
             exist_ok=True
@@ -45,7 +58,6 @@ async def upload_pdf(
             f"uploads/{file.filename}"
         )
 
-        # Save PDF
         with open(
             file_path,
             "wb"
@@ -55,14 +67,19 @@ async def upload_pdf(
 
             f.write(content)
 
-        # Extract text
         text = extract_pdf_text(
             file_path
         )
 
-        print(f"FILE: {file.filename}", flush=True)
-        print(f"TEXT EXTRACTED: {len(text)} chars", flush=True)
-        print(f"FIRST 200 CHARS: {text[:200]}", flush=True)
+        print(
+            f"FILE: {file.filename}",
+            flush=True
+        )
+
+        print(
+            f"TEXT EXTRACTED: {len(text)} chars",
+            flush=True
+        )
 
         if not text.strip():
 
@@ -73,39 +90,50 @@ async def upload_pdf(
                 detail="No text found in PDF"
             )
 
-        # Create chunks
-        chunks = chunk_text(text)
+        chunks = chunk_text(
+            text
+        )
 
-        print(f"CHUNKS CREATED: {len(chunks)}", flush=True)
-        if chunks:
-            print(f"CHUNK 1 SAMPLE: {chunks[0][:100]}...", flush=True)
+        print(
+            f"CHUNKS CREATED: {len(chunks)}",
+            flush=True
+        )
 
-        # Store in Pinecone with metadata
         store_chunks(
             chunks,
+            user_id,
             file.filename
         )
 
-        # Delete local file after processing
-        os.remove(file_path)
+        os.remove(
+            file_path
+        )
 
         return {
             "success": True,
-            "document": file.filename,
-            "chunks": len(chunks),
+            "document":
+            file.filename,
+            "chunks":
+            len(chunks),
             "message":
             "PDF indexed successfully"
         }
 
     except HTTPException:
+
         raise
 
     except Exception as e:
 
         if (
-            os.path.exists(file_path)
+            'file_path' in locals()
+            and os.path.exists(
+                file_path
+            )
         ):
-            os.remove(file_path)
+            os.remove(
+                file_path
+            )
 
         raise HTTPException(
             status_code=500,

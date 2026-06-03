@@ -28,7 +28,20 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 
+
+
+
 )
+
+from routes.auth import (
+    router as auth_router
+)
+
+app.include_router(
+    auth_router,
+    prefix="/api/auth"
+)
+
 app.include_router(
     upload_router,
     prefix="/api"

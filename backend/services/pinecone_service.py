@@ -22,7 +22,8 @@ index = pc.Index(
 
 def store_chunks(
     chunks,
-    document_name
+    user_id,
+    document_name,
 ):
 
     vectors = []
@@ -45,13 +46,15 @@ def store_chunks(
 
                 "metadata": {
                     "text": chunk,
-                    "document": document_name
+                    "document": document_name,
+                     "user_id": user_id
                 }
             }
         )
 
     index.upsert(
-        vectors=vectors
+        vectors=vectors,
+        namespace=user_id
     )
 
     return True
@@ -59,6 +62,7 @@ def store_chunks(
 
 def search_chunks(
     question,
+    user_id,
     document_name=None
 ):
 
@@ -83,6 +87,7 @@ def search_chunks(
         }
 
     results = index.query(
+        namespace=user_id,
         **query_params
     )
 

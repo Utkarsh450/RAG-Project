@@ -92,3 +92,42 @@ def search_chunks(
     )
 
     return results.matches
+def get_document_chunks(
+    user_id,
+    document_name
+):
+
+    results = index.query(
+        vector=[0] * 768,
+        top_k=100,
+        include_metadata=True,
+        namespace=user_id,
+        filter={
+            "document":
+            document_name
+        }
+    )
+    print(
+    f"DOC REQUESTED: {document_name}",
+    flush=True
+    )
+
+    print(
+        f"MATCHES: {len(results.matches)}",
+        flush=True
+    )
+
+    for match in results.matches[:3]:
+
+        print(
+            "DOC IN MATCH:",
+            match.metadata.get("document"),
+            flush=True
+        )
+
+        print(
+            match.metadata.get("text", "")[:200],
+            flush=True
+        )
+
+    return results.matches

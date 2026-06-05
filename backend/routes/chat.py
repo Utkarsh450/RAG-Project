@@ -6,9 +6,8 @@ from fastapi import (
 from fastapi.responses import (
     StreamingResponse
 )
-from services.gemini_service import (
-    generate_answer,
-    generate_answer_stream
+from services.orchestrator_service import (
+    process_question_stream
 )
 
 from pydantic import BaseModel
@@ -48,24 +47,19 @@ def ask_question(
         current_user["_id"]
     )
 
-    matches = search_chunks(
-        payload.question,
-        user_id,
-        payload.document
-    )
+    # matches = search_chunks(
+    #     payload.question,
+    #     user_id,
+    #     payload.document
+    # )
 
-    context = "\n".join(
-        [
-            match.metadata["text"]
-            for match in matches
-        ]
-    )
-
-    if not context.strip():
-        return {
-            "answer":
-            "No relevant information found in the document for your question."
-        }
+    # context = "\n".join(
+    #     [
+    #         match.metadata["text"]
+    #         for match in matches
+    #     ]
+    # )
+        
 
     history = get_history(
         user_id,
@@ -89,11 +83,12 @@ def ask_question(
             "No previous conversation"
         )
 
-    answer = generate_answer(
-        context,
-        payload.question,
-        formatted_history
-    )
+    answer = process_question(
+    question=payload.question,
+    history=formatted_history,
+    user_id=user_id,
+    document_name=payload.document
+)
 
     add_message(
         user_id,
@@ -126,27 +121,18 @@ def ask_stream(
         current_user["_id"]
     )
 
-    matches = search_chunks(
-        payload.question,
-        user_id,
-        payload.document
-    )
+    # matches = search_chunks(
+    #     payload.question,
+    #     user_id,
+    #     payload.document
+    # )
 
-    context = "\n".join(
-        [
-            match.metadata["text"]
-            for match in matches
-        ]
-    )
-
-    if not context.strip():
-
-        return StreamingResponse(
-            iter([
-                "No relevant information found in the document for your question."
-            ]),
-            media_type="text/event-stream"
-        )
+    # context = "\n".join(
+    #     [
+    #         match.metadata["text"]
+    #         for match in matches
+    #     ]
+    # )
 
     history = get_history(
         user_id,
@@ -171,12 +157,11 @@ def ask_stream(
         )
 
     return StreamingResponse(
-    stream_and_save(
-        context,
-        payload.question,
-        formatted_history,
-        user_id,
-        payload.document
+    orchestrator_stream_and_save(
+    payload.question,
+    formatted_history,
+    user_id,
+    payload.document
     ),
     media_type=
     "text/event-stream"
@@ -215,7 +200,43 @@ def stream_and_save(
         "assistant",
         full_answer
     
+    
     )
+def orchestrator_stream_and_save(
+    question,
+    history,
+    user_id,
+    document_name
+):
+
+    full_answer = ""
+
+    for chunk in process_question_stream(
+        question,
+        history,
+    
+        user_id,
+        document_name
+    ):
+
+        full_answer += chunk
+
+        yield chunk
+
+    add_message(
+        user_id,
+        document_name,
+        "user",
+        question
+    )
+
+    add_message(
+        user_id,
+        document_name,
+        "assistant",
+        full_answer
+    )    
+    
 @router.get("/chat-history")
 def chat_history(
     document: str,
@@ -239,3 +260,55 @@ def chat_history(
     print("HISTORY:", history)
 
     return history
+
+
+
+@router.get("/test-llm")
+def test_llm():
+
+    from services.langchain_groq_service import (
+        generate_answer
+    )
+
+    answer = generate_answer(
+        "React is a JavaScript library.",
+        "What is React?",
+        ""
+    )
+
+    return {
+        "answer": answer
+    }
+@router.get("/test-router")
+def test_router():
+
+    from services.router_service import (
+        route_question
+    )
+
+    return {
+        "route":
+        route_question(
+            "compare all pdfs"
+        )
+    
+    }
+@router.get("/test-orchestrator")
+def test_orchestrator():
+
+    from services.orchestrator_service import (
+        process_question
+    )
+
+    answer = process_question(
+        question=
+        "What was my previous question?",
+
+        context="",
+
+        history=""
+    )
+
+    return {
+        "answer": answer
+    }

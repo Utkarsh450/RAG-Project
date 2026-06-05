@@ -1,131 +1,126 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
+// ── Original imports preserved exactly ───────────────────────────────────────
 import Header from "../components/Header";
 import UploadPanel from "../components/UploadPanel";
 import ChatMessages from "../components/ChatMessages";
 import ChatInput from "../components/ChatInput";
-import { useEffect } from "react";
 import { chatService } from "../services/chatService";
-
 import { documentService } from "../services/documentService";
 
 export default function Chat() {
+  // ── All original state preserved exactly ───────────────────────────────────
   const [pdfs, setPdfs] = useState([]);
-
   const [selectedPdf, setSelectedPdf] = useState(null);
-
   const [messages, setMessages] = useState([]);
-
   const [uploading, setUploading] = useState(false);
-
   const [asking, setAsking] = useState(false);
-  const loadHistory =
-    async (
-        documentName
-    ) => {
 
-        try {
+  // ── All original logic preserved exactly ───────────────────────────────────
+  const loadHistory = async (documentName) => {
+    try {
+      const history = await chatService.getHistory(documentName);
+      setMessages(history);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-            const history =
-                await chatService.getHistory(
-                    documentName
-                );
-
-            setMessages(
-                history
-            );
-
-        } catch (
-            error
-        ) {
-
-            console.error(
-                error
-            );
-        }
-    };
   const loadDocuments = async () => {
     try {
       const docs = await documentService.getDocuments();
-
       const formattedDocs = docs.map((doc) => ({
         id: doc._id,
         name: doc.document_name,
       }));
-
       setPdfs(formattedDocs);
     } catch (error) {
       console.error(error);
     }
   };
+
   useEffect(() => {
     loadDocuments();
   }, []);
+
   useEffect(() => {
-
-    if (
-        selectedPdf
-    ) {
-
-        loadHistory(
-            selectedPdf.name
-        );
-
+    if (selectedPdf) {
+      loadHistory(selectedPdf.name);
     } else {
-
-        setMessages(
-            []
-        );
+      setMessages([]);
     }
+  }, [selectedPdf]);
+  // ─────────────────────────────────────────────────────────────────────────
 
-}, [selectedPdf]);
   return (
     <div
-      className="
-            min-h-screen
-            bg-[#f6f5f0]
-        "
+      style={{
+        minHeight: "100vh",
+        height: "100vh",
+        display: "flex",
+        background: "#0f0e17",
+        fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+        overflow: "hidden",
+        position: "relative",
+      }}
     >
-      <Header />
+      {/* Ambient background glow */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background:
+            "radial-gradient(ellipse at 18% 55%, rgba(108,99,255,0.07) 0%, transparent 55%)," +
+            "radial-gradient(ellipse at 82% 18%, rgba(167,139,250,0.05) 0%, transparent 50%)",
+          pointerEvents: "none",
+          zIndex: 0,
+        }}
+      />
 
-      <main
-        className="
-                max-w-7xl
-                mx-auto
-                p-6
-                grid
-                grid-cols-[320px_1fr]
-                gap-6
-            "
+      {/* ── Sidebar / UploadPanel ─────────────────────────────────────────── */}
+      <UploadPanel
+        pdfs={pdfs}
+        setPdfs={setPdfs}
+        selectedPdf={selectedPdf}
+        setSelectedPdf={setSelectedPdf}
+        uploading={uploading}
+        setUploading={setUploading}
+      />
+
+      {/* ── Main chat area ───────────────────────────────────────────────── */}
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          minWidth: 0,
+          position: "relative",
+          zIndex: 1,
+        }}
       >
-        <UploadPanel
-          pdfs={pdfs}
-          setPdfs={setPdfs}
+        {/* Header — shows active document name */}
+        <Header
           selectedPdf={selectedPdf}
-          setSelectedPdf={setSelectedPdf}
-          uploading={uploading}
-          setUploading={setUploading}
+          onClearChat={() => setMessages([])}
         />
 
-        <div
-          className="
-                    bg-white
-                    rounded-xl
-                    flex
-                    flex-col
-                    h-[750px]
-                "
-        >
-          <ChatMessages messages={messages} asking={asking} />
+        {/* Messages — grows to fill space */}
+        <ChatMessages
+          messages={messages}
+          asking={asking}
+          selectedPdf={selectedPdf}
+        />
 
-          <ChatInput
-            selectedPdf={selectedPdf}
-            setMessages={setMessages}
-            asking={asking}
-            setAsking={setAsking}
-          />
-        </div>
-      </main>
+        {/* Input — pinned to bottom */}
+        <ChatInput
+          selectedPdf={selectedPdf}
+          setMessages={setMessages}
+          asking={asking}
+          setAsking={setAsking}
+        />
+      </div>
     </div>
   );
+  
+  
 }

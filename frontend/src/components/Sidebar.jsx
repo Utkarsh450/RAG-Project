@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
 export default function Sidebar() {
+  // ── All original logic preserved exactly ──────────────────────────────────
   const { logout } = useAuth();
   const navigate = useNavigate();
 
@@ -9,104 +10,245 @@ export default function Sidebar() {
     await logout();
     navigate("/login");
   };
+  // ─────────────────────────────────────────────────────────────────────────
 
   return (
     <div
-      className="w-72 flex flex-col h-full"
       style={{
-        background: "rgba(255,255,255,0.03)",
-        borderRight: "0.5px solid rgba(255,255,255,0.08)",
+        width: 260,
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        background: "rgba(255,255,255,0.025)",
+        borderRight: "0.5px solid rgba(255,255,255,0.07)",
         backdropFilter: "blur(20px)",
+        flexShrink: 0,
       }}
     >
-      {/* Logo Header */}
+      {/* ── Logo ─────────────────────────────────────────────────────────── */}
       <div
-        className="flex items-center gap-3 px-5 py-5"
-        style={{ borderBottom: "0.5px solid rgba(255,255,255,0.06)" }}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
+          padding: "18px 18px 15px",
+          borderBottom: "0.5px solid rgba(255,255,255,0.06)",
+        }}
       >
         <div
-          className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-          style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}
+          style={{
+            width: 30,
+            height: 30,
+            borderRadius: 9,
+            background: "linear-gradient(135deg, #6c63ff, #a78bfa)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+          }}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
-            <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="white"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+            <line x1="16" y1="13" x2="8" y2="13" />
+            <line x1="16" y1="17" x2="8" y2="17" />
           </svg>
         </div>
-        <span className="text-white text-base font-semibold tracking-tight">PDF Chat</span>
+        <div>
+          <p
+            style={{
+              color: "#fff",
+              fontSize: 13.5,
+              fontWeight: 650,
+              margin: 0,
+              letterSpacing: "-0.3px",
+            }}
+          >
+            DocChat
+          </p>
+          <p
+            style={{ color: "rgba(255,255,255,0.28)", fontSize: 10, margin: 0 }}
+          >
+            AI Document Assistant
+          </p>
+        </div>
       </div>
 
-      {/* Upload Button */}
-      <div className="px-4 pt-5">
+      {/* ── Upload button ────────────────────────────────────────────────── */}
+      <div style={{ padding: "14px 14px 8px" }}>
         <button
-          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium text-white transition-all"
           style={{
-            background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 7,
+            padding: "10px",
+            borderRadius: 11,
+            background: "linear-gradient(135deg, #6c63ff, #a78bfa)",
             border: "none",
+            color: "#fff",
+            fontSize: 13,
+            fontWeight: 500,
             cursor: "pointer",
-            boxShadow: "0 4px 20px rgba(99,102,241,0.25)",
+            boxShadow: "0 4px 20px rgba(108,99,255,0.28)",
+            transition: "box-shadow .2s, transform .15s",
+            fontFamily: "inherit",
           }}
-          onMouseEnter={e => e.currentTarget.style.boxShadow = "0 4px 28px rgba(99,102,241,0.45)"}
-          onMouseLeave={e => e.currentTarget.style.boxShadow = "0 4px 20px rgba(99,102,241,0.25)"}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.boxShadow =
+              "0 4px 28px rgba(108,99,255,0.48)";
+            e.currentTarget.style.transform = "translateY(-1px)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.boxShadow =
+              "0 4px 20px rgba(108,99,255,0.28)";
+            e.currentTarget.style.transform = "translateY(0)";
+          }}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="17 8 12 3 7 8" />
+            <line x1="12" y1="3" x2="12" y2="15" />
           </svg>
-          Upload PDF
+          Upload File
         </button>
       </div>
 
-      {/* Files Section */}
-      <div className="flex-1 px-4 mt-6 overflow-y-auto">
+      {/* ── Files section ────────────────────────────────────────────────── */}
+      <div
+        style={{
+          flex: 1,
+          padding: "4px 10px 8px",
+          overflowY: "auto",
+          scrollbarWidth: "thin",
+          scrollbarColor: "rgba(255,255,255,0.06) transparent",
+        }}
+      >
         <p
-          className="text-xs font-semibold tracking-widest uppercase mb-3 px-1"
-          style={{ color: "rgba(255,255,255,0.3)" }}
+          style={{
+            fontSize: 10,
+            fontWeight: 600,
+            letterSpacing: "0.8px",
+            color: "rgba(255,255,255,0.22)",
+            textTransform: "uppercase",
+            margin: "8px 2px 10px",
+            paddingLeft: 2,
+          }}
         >
           Uploaded Files
         </p>
 
+        {/* Empty placeholder */}
         <div
-          className="flex flex-col items-center justify-center py-10 rounded-xl"
-          style={{ border: "0.5px dashed rgba(255,255,255,0.1)" }}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "32px 12px",
+            border: "0.5px dashed rgba(255,255,255,0.08)",
+            borderRadius: 10,
+            gap: 8,
+          }}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 mb-3" style={{ color: "rgba(255,255,255,0.15)" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="rgba(255,255,255,0.12)"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
           </svg>
-          <p className="text-xs text-center" style={{ color: "rgba(255,255,255,0.25)" }}>
+          <p
+            style={{
+              color: "rgba(255,255,255,0.2)",
+              fontSize: 12,
+              textAlign: "center",
+              lineHeight: 1.5,
+              margin: 0,
+            }}
+          >
             No files uploaded yet
           </p>
         </div>
       </div>
 
-      {/* Logout */}
+      {/* ── Logout ───────────────────────────────────────────────────────── */}
       <div
-        className="px-4 py-4"
-        style={{ borderTop: "0.5px solid rgba(255,255,255,0.06)" }}
+        style={{
+          padding: "10px 14px 14px",
+          borderTop: "0.5px solid rgba(255,255,255,0.06)",
+        }}
       >
         <button
           onClick={handleLogout}
-          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium transition-all"
           style={{
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 7,
+            padding: "9px",
+            borderRadius: 10,
             background: "rgba(255,255,255,0.04)",
-            border: "0.5px solid rgba(255,255,255,0.08)",
-            color: "rgba(255,255,255,0.5)",
+            border: "0.5px solid rgba(255,255,255,0.07)",
+            color: "rgba(255,255,255,0.4)",
+            fontSize: 13,
+            fontWeight: 500,
             cursor: "pointer",
+            transition: "all .18s",
+            fontFamily: "inherit",
           }}
-          onMouseEnter={e => {
+          onMouseEnter={(e) => {
             e.currentTarget.style.background = "rgba(239,68,68,0.1)";
-            e.currentTarget.style.borderColor = "rgba(239,68,68,0.3)";
-            e.currentTarget.style.color = "rgba(252,165,165,0.9)";
+            e.currentTarget.style.borderColor = "rgba(239,68,68,0.25)";
+            e.currentTarget.style.color = "rgba(252,165,165,0.85)";
           }}
-          onMouseLeave={e => {
+          onMouseLeave={(e) => {
             e.currentTarget.style.background = "rgba(255,255,255,0.04)";
-            e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
-            e.currentTarget.style.color = "rgba(255,255,255,0.5)";
+            e.currentTarget.style.borderColor = "rgba(255,255,255,0.07)";
+            e.currentTarget.style.color = "rgba(255,255,255,0.4)";
           }}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+          <svg
+            width="13"
+            height="13"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
           </svg>
-          Logout
+          Sign out
         </button>
       </div>
     </div>

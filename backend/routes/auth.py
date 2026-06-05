@@ -114,8 +114,8 @@ def refresh_token(
             detail="Invalid refresh token"
         )
 
-    return token
 
+    return token
 
 @router.get("/me")
 def get_me(

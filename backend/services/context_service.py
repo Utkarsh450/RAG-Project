@@ -1,8 +1,9 @@
 from services.pinecone_service import (
     search_chunks
 )
+from langsmith import traceable
 
-
+@traceable
 def get_context(
     question,
     user_id,

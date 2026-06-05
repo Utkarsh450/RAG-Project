@@ -1,6 +1,7 @@
 from services.router_service import (
     route_question
 )
+from langsmith import traceable
 
 from services.agents.document_agent import (
     run as document_run,
@@ -75,7 +76,8 @@ def process_question(
 
         return general_run(
             question,
-            history
+            history,
+            user_id
         )
 
     elif route == "memory":
@@ -91,10 +93,11 @@ def process_question(
 
     return general_run(
         question,
-        history
+        history,
+        user_id
     )
 
-
+@traceable
 def process_question_stream(
     question,
     history,
@@ -142,14 +145,16 @@ def process_question_stream(
 
         return general_stream(
             question,
-            history
+            history,
+            user_id
         )
 
     elif route == "memory":
 
         return general_stream(
             question,
-            history
+            history,
+            user_id
         )
     elif route == "document_meta":
 
@@ -169,5 +174,8 @@ def process_question_stream(
 
     return general_stream(
         question,
-        history
-    )
+        history,
+        user_id
+    
+    ) 
+    

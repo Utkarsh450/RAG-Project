@@ -235,7 +235,7 @@ export default function UploadPanel({
           <input
             ref={fileInputRef}
             type="file"
-            accept=".pdf,.txt,.docx,.pptx"
+            accept="pdf,.docx,.pptx,.txt,.png,.jpg,.jpeg"
             style={{ display: "none" }}
             onChange={handleFileChange}
           />

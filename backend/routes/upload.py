@@ -16,6 +16,10 @@ from services.pdf_service import extract_pdf_text
 from services.chunk_service import chunk_text
 from services.pinecone_service import store_chunks
 from services.current_user_service import get_current_user
+from services.image_service import (
+    extract_image_text
+)
+import traceback
 
 router = APIRouter()
 
@@ -46,6 +50,16 @@ async def upload_pdf(
             text = extract_docx_text(file_path)
         elif extension == "pptx":
             text = extract_pptx_text(file_path)
+        elif extension in [
+            "png",
+            "jpg",
+            "jpeg"
+        ]:
+
+            text = extract_image_text(
+            file_path
+            )
+            print(text[:5000])
         else:
             raise HTTPException(
                 status_code=400,
@@ -85,6 +99,7 @@ async def upload_pdf(
     except Exception as e:
         if 'file_path' in locals() and os.path.exists(file_path):
             os.remove(file_path)
+            traceback.print_exc()
 
         raise HTTPException(
             status_code=500,

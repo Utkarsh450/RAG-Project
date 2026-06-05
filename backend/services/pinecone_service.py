@@ -2,6 +2,7 @@ import os
 import uuid
 
 from pinecone import Pinecone
+from langsmith import traceable
 
 from services.embedding_service import (
     create_embedding
@@ -59,7 +60,7 @@ def store_chunks(
 
     return True
 
-
+@traceable
 def search_chunks(
     question,
     user_id,

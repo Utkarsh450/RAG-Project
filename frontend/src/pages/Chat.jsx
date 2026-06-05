@@ -44,12 +44,12 @@ export default function Chat() {
   }, []);
 
   useEffect(() => {
-    if (selectedPdf) {
-      loadHistory(selectedPdf.name);
-    } else {
-      setMessages([]);
-    }
-  }, [selectedPdf]);
+  if (selectedPdf) {
+    loadHistory(selectedPdf.name);
+  } else {
+    loadHistory(null);
+  }
+}, [selectedPdf]);
   // ─────────────────────────────────────────────────────────────────────────
 
   return (
@@ -59,7 +59,7 @@ export default function Chat() {
         height: "100vh",
         display: "flex",
         background: "#0f0e17",
-        fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+        fontFamily: "satoshi",
         overflow: "hidden",
         position: "relative",
       }}

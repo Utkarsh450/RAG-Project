@@ -1,12 +1,13 @@
 from services.document_service import (
     get_documents
 )
+from langsmith import traceable
 
 from services.pinecone_service import (
     get_document_chunks
 )
 
-
+@traceable
 def get_comparison_context(
     question,
     user_id

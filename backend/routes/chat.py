@@ -32,7 +32,7 @@ class QuestionRequest(
     BaseModel
 ):
     question: str
-    document: str
+    document: str | None = None
 
 
 @router.post("/ask")
@@ -120,6 +120,13 @@ def ask_stream(
     user_id = str(
         current_user["_id"]
     )
+    
+    
+    workspace_id = (
+    payload.document
+    if payload.document
+    else "general"
+)
 
     # matches = search_chunks(
     #     payload.question,
@@ -136,7 +143,7 @@ def ask_stream(
 
     history = get_history(
         user_id,
-        payload.document
+        workspace_id
     )[-10:]
 
     formatted_history = ""
@@ -209,12 +216,17 @@ def orchestrator_stream_and_save(
     document_name
 ):
 
+    workspace_id = (
+        document_name
+        if document_name
+        else "general"
+    )
+
     full_answer = ""
 
     for chunk in process_question_stream(
         question,
         history,
-    
         user_id,
         document_name
     ):
@@ -225,21 +237,21 @@ def orchestrator_stream_and_save(
 
     add_message(
         user_id,
-        document_name,
+        workspace_id,
         "user",
         question
     )
 
     add_message(
         user_id,
-        document_name,
+        workspace_id,
         "assistant",
         full_answer
-    )    
+    )
     
 @router.get("/chat-history")
 def chat_history(
-    document: str,
+    document: str | None = None,
     current_user=Depends(
         get_current_user
     )
@@ -249,15 +261,16 @@ def chat_history(
         current_user["_id"]
     )
 
-    print("DOCUMENT:", document)
-    print("USER:", user_id)
+    workspace_id = (
+        document
+        if document
+        else "general"
+    )
 
     history = get_history(
         user_id,
-        document
+        workspace_id
     )
-
-    print("HISTORY:", history)
 
     return history
 

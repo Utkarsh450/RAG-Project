@@ -5,26 +5,30 @@ from services.chains.general_chain import (
 
 def generate_general_answer(
     question,
-    history
+    history,
+    documents
 ):
 
     return general_chain.invoke(
         {
             "question": question,
-            "history": history
+            "history": history,
+            "documents": documents
         }
     )
 
 
 def generate_general_answer_stream(
     question,
-    history 
+    history,
+    documents
 ):
 
     for chunk in general_chain.stream(
         {
             "question": question,
-            "history": history
+            "history": history,
+            "documents": documents
         }
     ):
 

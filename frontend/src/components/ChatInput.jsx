@@ -17,11 +17,6 @@ export default function ChatInput({
 
     if (!question.trim()) return;
 
-    if (!selectedPdf) {
-      toast.error("Please upload and select a PDF first.");
-      return;
-    }
-
     const currentQuestion = question;
     setQuestion("");
 
@@ -39,9 +34,9 @@ export default function ChatInput({
       ]);
 
       const response = await chatService.streamQuestion(
-        currentQuestion,
-        selectedPdf.name
-      );
+  currentQuestion,
+  selectedPdf?.name || null
+);
 
       if (!response.ok) {
         throw new Error("Failed to stream response");
@@ -87,7 +82,7 @@ export default function ChatInput({
   };
   // ─────────────────────────────────────────────────────────────────────────
 
-  const isDisabled = asking || !question.trim() || !selectedPdf;
+  const isDisabled = asking || !question.trim();
 
   return (
     <div
@@ -139,9 +134,9 @@ export default function ChatInput({
             placeholder={
               selectedPdf
                 ? `Ask about "${selectedPdf.name}"…`
-                : "Select a document first…"
+                : "Ask anything..."
             }
-            disabled={asking || !selectedPdf}
+            disabled={asking}
             style={{
               flex: 1,
               background: "transparent",
@@ -222,8 +217,13 @@ export default function ChatInput({
           letterSpacing: "0.2px",
         }}
       >
-        Responses are based on your uploaded document content
+        {selectedPdf
+  ? `Responses are based on ${selectedPdf.name}`
+  : "General AI chat mode"}
       </p>
     </div>
   );
+  
+  
+  
 }

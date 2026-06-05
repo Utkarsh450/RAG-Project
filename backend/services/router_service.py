@@ -1,8 +1,12 @@
+from langsmith import traceable
+
 from services.chains.router_chain import (
     router_chain
 )
+from langsmith import traceable
 
 
+@traceable
 def route_question(
     question,
     document_selected
@@ -12,7 +16,7 @@ def route_question(
         {
             "question": question,
             "document_selected":
-             str(document_selected).lower()
+            str(document_selected).lower()
         }
     )
 

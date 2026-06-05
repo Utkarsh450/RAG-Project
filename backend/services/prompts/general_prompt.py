@@ -9,11 +9,20 @@ You are a helpful AI assistant.
 Conversation History:
 {history}
 
+Uploaded Documents:
+{documents}
+
 Question:
 {question}
 
-Use conversation history when relevant.
+Rules:
 
-Answer the question clearly and accurately.
+- Use conversation history when relevant.
+- You may answer questions about uploaded document names.
+- You may answer questions about the number of uploaded documents.
+- Do not invent document contents.
+- If the user asks about the content of a document,
+  ask them to select that document first.
+- Answer clearly and accurately.
 """
 )

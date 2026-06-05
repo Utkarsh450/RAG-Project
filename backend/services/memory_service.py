@@ -5,18 +5,15 @@ from db.db import (
 
 def add_message(
     user_id,
-    document_name,
+    workspace_id,
     role,
     content
 ):
 
     conversation_collection.update_one(
         {
-            "user_id":
-            user_id,
-
-            "document_name":
-            document_name
+            "user_id": user_id,
+            "workspace_id": workspace_id
         },
         {
             "$push": {
@@ -32,23 +29,20 @@ def add_message(
 
 def get_history(
     user_id,
-    document_name
+    workspace_id
 ):
 
     print(
         "SEARCHING:",
         user_id,
-        document_name
+        workspace_id
     )
 
     conversation = (
         conversation_collection.find_one(
             {
-                "user_id":
-                user_id,
-
-                "document_name":
-                document_name
+                "user_id": user_id,
+                "workspace_id": workspace_id
             }
         )
     )
@@ -64,21 +58,17 @@ def get_history(
     return conversation.get(
         "messages",
         []
-    
     )
 
 
 def clear_history(
     user_id,
-    document_name
+    workspace_id
 ):
 
     conversation_collection.delete_one(
         {
-            "user_id":
-            user_id,
-
-            "document_name":
-            document_name
+            "user_id": user_id,
+            "workspace_id": workspace_id
         }
     )

@@ -127,7 +127,7 @@ export default function Register() {
         <div className="grid grid-cols-2 gap-3 mb-6">
           {/* Google */}
           <button
-            onClick={() => { window.location.href = "http://localhost:8000/api/auth/google/login"; }}
+            onClick={() => { window.location.href = "https://rag-project-fhfj.onrender.com/api/auth/google/login"; }}
             className="flex items-center justify-center gap-2.5 py-2.5 px-4 rounded-xl text-sm font-medium transition-all"
             style={{
               background: "rgba(255,255,255,0.06)",
@@ -150,7 +150,7 @@ export default function Register() {
 
           {/* GitHub */}
           <button
-            onClick={() => { window.location.href = "http://localhost:8000/api/auth/github/login"; }}
+            onClick={() => { window.location.href = "https://rag-project-fhfj.onrender.com/api/auth/github/login"; }}
             className="flex items-center justify-center gap-2.5 py-2.5 px-4 rounded-xl text-sm font-medium transition-all"
             style={{
               background: "rgba(255,255,255,0.06)",

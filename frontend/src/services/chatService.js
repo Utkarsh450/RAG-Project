@@ -48,7 +48,7 @@ export const chatService = {
             );
 
         let response = await fetch(
-            "http://localhost:8000/api/ask-stream",
+            "https://rag-project-fhfj.onrender.com/api/ask-stream",
             {
                 method: "POST",
 
@@ -91,7 +91,7 @@ export const chatService = {
 
                 const refreshResponse =
                     await axios.post(
-                        "http://localhost:8000/api/auth/refresh",
+                        "https://rag-project-fhfj.onrender.com/api/auth/refresh",
                         {
                             refresh_token:
                             refreshToken
@@ -111,7 +111,7 @@ export const chatService = {
                 );
 
                 response = await fetch(
-                    "http://localhost:8000/api/ask-stream",
+                    "https://rag-project-fhfj.onrender.com/api/ask-stream",
                     {
                         method: "POST",
 

@@ -161,7 +161,7 @@ async def google_login(
 ):
 
     redirect_uri = (
-        "http://localhost:8000"
+        "https://rag-project-fhfj.onrender.com"
         "/api/auth/google/callback"
     )
 
@@ -223,7 +223,7 @@ async def google_callback(
     )
 
     frontend_url = (
-        "http://localhost:5173"
+        "https://darling-zabaione-a9ef22.netlify.app"
         f"/oauth-success?"
         f"access_token={access_token}"
         f"&refresh_token={refresh_token}"
@@ -240,7 +240,7 @@ async def github_login(
 ):
 
     redirect_uri = (
-        "http://localhost:8000"
+        "https://rag-project-fhfj.onrender.com"
         "/api/auth/github/callback"
     )
 
@@ -338,7 +338,7 @@ async def github_callback(
     )
 
     frontend_url = (
-        "http://localhost:5173"
+        "https://darling-zabaione-a9ef22.netlify.app"
         f"/oauth-success?"
         f"access_token={access_token}"
         f"&refresh_token={refresh_token}"

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: "http://localhost:8000/api",
+    baseURL: "https://rag-project-fhfj.onrender.com/api",
     headers: {
         "Content-Type": "application/json"
     }
@@ -64,7 +64,7 @@ api.interceptors.response.use(
 
                 const response =
                     await axios.post(
-                        "http://localhost:8000/api/auth/refresh",
+                        "https://rag-project-fhfj.onrender.com/api/auth/refresh",
                         {
                             refresh_token:
                             refreshToken

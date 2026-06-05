@@ -19,6 +19,13 @@ from routes.chat import (
 from routes.document import (
     router as document_router
 )
+import mimetypes
+
+# Manually force the correct mime types
+mimetypes.add_type('application/javascript', '.js')
+mimetypes.add_type('application/javascript', '.jsx')
+mimetypes.add_type('application/javascript', '.ts')
+mimetypes.add_type('application/javascript', '.tsx')
 
 app = FastAPI(
     title="RAG API",

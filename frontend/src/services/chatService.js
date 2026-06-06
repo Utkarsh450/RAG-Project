@@ -48,7 +48,7 @@ export const chatService = {
             );
 
         let response = await fetch(
-            "https://rag-project-fhfj.onrender.com/api/ask-stream",
+            "https://rag-project-fhfj.onrender.com/api/ask-stream", 
             // "http://localhost:8000/api/ask-stream",
             {
                 method: "POST",

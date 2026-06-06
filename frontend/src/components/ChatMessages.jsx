@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import EmptyState from "./EmptyState";
 import TypingIndicator from "./TypingIndicator";
 
-export default function ChatMessages({ messages, asking, selectedPdf }) {
+export default function ChatMessages({ messages, asking, selectedPdf, isMobile, triggerSend }) {
   const bottomRef = useRef(null);
 
   // Auto-scroll to bottom on new messages
@@ -14,7 +14,7 @@ export default function ChatMessages({ messages, asking, selectedPdf }) {
   if (messages.length === 0) {
     return (
       <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-        <EmptyState selectedPdf={selectedPdf} />
+        <EmptyState selectedPdf={selectedPdf} isMobile={isMobile} triggerSend={triggerSend} />
       </div>
     );
   }
@@ -25,7 +25,7 @@ export default function ChatMessages({ messages, asking, selectedPdf }) {
       style={{
         flex: 1,
         overflowY: "auto",
-        padding: "24px 20px",
+        padding: isMobile ? "16px 12px" : "24px 20px",
         scrollbarWidth: "thin",
         scrollbarColor: "rgba(255,255,255,0.08) transparent",
       }}
@@ -93,7 +93,7 @@ export default function ChatMessages({ messages, asking, selectedPdf }) {
             {/* Message bubble */}
             <div
               style={{
-                maxWidth: "72%",
+                maxWidth: isMobile ? "85%" : "72%",
                 padding: "11px 16px",
                 fontSize: 14,
                 lineHeight: 1.65,

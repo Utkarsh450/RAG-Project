@@ -1,4 +1,4 @@
-export default function Header({ selectedPdf, onClearChat }) {
+export default function Header({ selectedPdf, onClearChat, isMobile, onToggleSidebar }) {
   const fileColor = (name = "") => {
     const ext = name?.split(".").pop().toLowerCase();
     const map = { pdf: "#e25c5c", docx: "#4a9cf6", pptx: "#f07c3a", txt: "#6eb56e" };
@@ -10,7 +10,7 @@ export default function Header({ selectedPdf, onClearChat }) {
   return (
     <div
       style={{
-        padding: "12px 20px",
+        padding: isMobile ? "12px 14px" : "12px 20px",
         borderBottom: "0.5px solid rgba(255,255,255,0.07)",
         display: "flex",
         alignItems: "center",
@@ -19,6 +19,50 @@ export default function Header({ selectedPdf, onClearChat }) {
         flexShrink: 0,
       }}
     >
+      {isMobile && (
+        <button
+          onClick={onToggleSidebar}
+          title="Open menu"
+          style={{
+            width: 34,
+            height: 34,
+            borderRadius: 10,
+            background: "rgba(255,255,255,0.05)",
+            border: "0.5px solid rgba(255,255,255,0.08)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "pointer",
+            color: "rgba(255,255,255,0.7)",
+            transition: "all .15s",
+            flexShrink: 0,
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = "rgba(255,255,255,0.09)";
+            e.currentTarget.style.color = "#fff";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "rgba(255,255,255,0.05)";
+            e.currentTarget.style.color = "rgba(255,255,255,0.7)";
+          }}
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+        </button>
+      )}
+
       {/* File icon */}
       <div
         style={{

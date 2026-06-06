@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { toast } from "react-hot-toast";
 import { chatService } from "../services/chatService";
 
@@ -7,22 +7,18 @@ export default function ChatInput({
   setMessages,
   asking,
   setAsking,
+  isMobile,
+  triggerSend,
 }) {
   const [question, setQuestion] = useState("");
   const inputRef = useRef(null);
 
-  // ── All original logic preserved exactly ──────────────────────────────────
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!question.trim()) return;
-
-    const currentQuestion = question;
-    setQuestion("");
+  const askQuestion = async (questionText) => {
+    if (!questionText.trim() || asking) return;
 
     setMessages((prev) => [
       ...prev,
-      { role: "user", content: currentQuestion },
+      { role: "user", content: questionText },
     ]);
 
     try {
@@ -34,9 +30,9 @@ export default function ChatInput({
       ]);
 
       const response = await chatService.streamQuestion(
-  currentQuestion,
-  selectedPdf?.name || null
-);
+        questionText,
+        selectedPdf?.name || null
+      );
 
       if (!response.ok) {
         throw new Error("Failed to stream response");
@@ -80,6 +76,28 @@ export default function ChatInput({
       setTimeout(() => inputRef.current?.focus(), 50);
     }
   };
+
+  // ── All original logic preserved exactly ──────────────────────────────────
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!question.trim()) return;
+    const currentQuestion = question;
+    setQuestion("");
+    await askQuestion(currentQuestion);
+  };
+
+  useEffect(() => {
+    if (triggerSend) {
+      triggerSend.current = (q) => {
+        askQuestion(q);
+      };
+    }
+    return () => {
+      if (triggerSend) {
+        triggerSend.current = null;
+      }
+    };
+  }, [triggerSend, asking, selectedPdf]);
   // ─────────────────────────────────────────────────────────────────────────
 
   const isDisabled = asking || !question.trim();
@@ -87,7 +105,7 @@ export default function ChatInput({
   return (
     <div
       style={{
-        padding: "14px 20px 16px",
+        padding: isMobile ? "10px 12px 12px" : "14px 20px 16px",
         borderTop: "0.5px solid rgba(255,255,255,0.07)",
         background: "rgba(0,0,0,0.14)",
         flexShrink: 0,

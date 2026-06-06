@@ -34,7 +34,7 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center p-4"
       style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f1a2e 100%)" }}>
       
-      <div className="w-full max-w-md rounded-2xl p-10"
+      <div className="w-full max-w-md rounded-2xl p-6 sm:p-10"
         style={{ background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.12)", backdropFilter: "blur(20px)" }}>
 
         {/* Logo */}
@@ -130,7 +130,10 @@ export default function Login() {
         <div className="grid grid-cols-2 gap-3 mb-6">
           {/* Google */}
           <button
-            onClick={() => { window.location.href = "https://rag-project-fhfj.onrender.com/api/auth/google/login"; }}
+            onClick={() => { window.location.href = 
+              "https://rag-project-fhfj.onrender.com/api/auth/google/login";
+              // "http://localhost:8000/api/auth/google/login";
+             }}
             className="flex items-center justify-center gap-2.5 py-2.5 px-4 rounded-xl text-sm font-medium transition-all"
             style={{
               background: "rgba(255,255,255,0.06)",
@@ -153,7 +156,10 @@ export default function Login() {
 
           {/* GitHub */}
           <button
-            onClick={() => { window.location.href = "https://rag-project-fhfj.onrender.com/api/auth/github/login"; }}
+            onClick={() => { window.location.href = 
+              "https://rag-project-fhfj.onrender.com/api/auth/github/login";
+              // "http://localhost:8000/api/auth/github/login"
+             }}
             className="flex items-center justify-center gap-2.5 py-2.5 px-4 rounded-xl text-sm font-medium transition-all"
             style={{
               background: "rgba(255,255,255,0.06)",

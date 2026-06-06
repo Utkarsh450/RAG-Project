@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 // ── Original imports preserved exactly ───────────────────────────────────────
 import Header from "../components/Header";
@@ -15,6 +15,24 @@ export default function Chat() {
   const [messages, setMessages] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [asking, setAsking] = useState(false);
+
+  // ── Responsive UI states ───────────────────────────────────────────────────
+  const [isMobile, setIsMobile] = useState(typeof window !== "undefined" ? window.innerWidth <= 768 : false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const triggerSendRef = useRef(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const handleResize = () => {
+      const mobile = window.innerWidth <= 768;
+      setIsMobile(mobile);
+      if (!mobile) {
+        setSidebarOpen(false);
+      }
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   // ── All original logic preserved exactly ───────────────────────────────────
   const loadHistory = async (documentName) => {
@@ -77,6 +95,21 @@ export default function Chat() {
         }}
       />
 
+      {/* Backdrop for mobile sidebar */}
+      {isMobile && sidebarOpen && (
+        <div
+          onClick={() => setSidebarOpen(false)}
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0, 0, 0, 0.4)",
+            backdropFilter: "blur(4px)",
+            zIndex: 45,
+            transition: "opacity 0.2s ease",
+          }}
+        />
+      )}
+
       {/* ── Sidebar / UploadPanel ─────────────────────────────────────────── */}
       <UploadPanel
         pdfs={pdfs}
@@ -85,6 +118,9 @@ export default function Chat() {
         setSelectedPdf={setSelectedPdf}
         uploading={uploading}
         setUploading={setUploading}
+        isMobile={isMobile}
+        sidebarOpen={sidebarOpen}
+        onCloseSidebar={() => setSidebarOpen(false)}
       />
 
       {/* ── Main chat area ───────────────────────────────────────────────── */}
@@ -102,6 +138,8 @@ export default function Chat() {
         <Header
           selectedPdf={selectedPdf}
           onClearChat={() => setMessages([])}
+          isMobile={isMobile}
+          onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
         />
 
         {/* Messages — grows to fill space */}
@@ -109,6 +147,8 @@ export default function Chat() {
           messages={messages}
           asking={asking}
           selectedPdf={selectedPdf}
+          isMobile={isMobile}
+          triggerSend={triggerSendRef}
         />
 
         {/* Input — pinned to bottom */}
@@ -117,6 +157,8 @@ export default function Chat() {
           setMessages={setMessages}
           asking={asking}
           setAsking={setAsking}
+          isMobile={isMobile}
+          triggerSend={triggerSendRef}
         />
       </div>
     </div>

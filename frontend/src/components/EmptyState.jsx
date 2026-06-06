@@ -1,4 +1,4 @@
-export default function EmptyState({ selectedPdf }) {
+export default function EmptyState({ selectedPdf, isMobile, triggerSend }) {
   const suggestions = [
     "Summarize this document",
     "What are the key points?",
@@ -14,7 +14,7 @@ export default function EmptyState({ selectedPdf }) {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        padding: "56px 32px",
+        padding: isMobile ? "32px 16px" : "56px 32px",
         textAlign: "center",
       }}
     >
@@ -91,6 +91,11 @@ export default function EmptyState({ selectedPdf }) {
           {suggestions.map((s) => (
             <button
               key={s}
+              onClick={() => {
+                if (triggerSend?.current) {
+                  triggerSend.current(s);
+                }
+              }}
               style={{
                 background: "rgba(255,255,255,0.05)",
                 border: "0.5px solid rgba(255,255,255,0.1)",

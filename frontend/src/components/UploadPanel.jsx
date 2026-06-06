@@ -19,6 +19,9 @@ export default function UploadPanel({
   setSelectedPdf,
   uploading,
   setUploading,
+  isMobile,
+  sidebarOpen,
+  onCloseSidebar,
 }) {
   const navigate = useNavigate();
   const { logout } = useAuth();
@@ -42,6 +45,9 @@ export default function UploadPanel({
 
       setPdfs((prev) => [...prev, newPdf]);
       setSelectedPdf(newPdf);
+      if (isMobile && onCloseSidebar) {
+        onCloseSidebar();
+      }
 
       toast.success("PDF Uploaded");
     } catch (error) {
@@ -67,14 +73,35 @@ export default function UploadPanel({
 
   return (
     <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100%",
-        background: "rgba(255,255,255,0.025)",
-        borderRight: "0.5px solid rgba(255,255,255,0.07)",
-        flexShrink: 0,
-      }}
+      style={
+        isMobile
+          ? {
+              display: "flex",
+              flexDirection: "column",
+              height: "100%",
+              background: "#0f0e17", // match Chat background
+              borderRight: "0.5px solid rgba(255,255,255,0.07)",
+              position: "fixed",
+              top: 0,
+              left: 0,
+              bottom: 0,
+              width: 280,
+              zIndex: 50,
+              transform: sidebarOpen ? "translateX(0)" : "translateX(-100%)",
+              transition: "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+              boxShadow: sidebarOpen ? "8px 0 32px rgba(0,0,0,0.6)" : "none",
+              backdropFilter: "blur(20px)",
+            }
+          : {
+              display: "flex",
+              flexDirection: "column",
+              height: "100%",
+              background: "rgba(255,255,255,0.025)",
+              borderRight: "0.5px solid rgba(255,255,255,0.07)",
+              width: 260,
+              flexShrink: 0,
+            }
+      }
     >
       {/* ── Logo ─────────────────────────────────────────────────────────── */}
       <div
@@ -252,6 +279,106 @@ export default function UploadPanel({
           scrollbarColor: "rgba(255,255,255,0.06) transparent",
         }}
       >
+        {/* General Chat Selector */}
+        <button
+          onClick={() => {
+            setSelectedPdf(null);
+            if (isMobile && onCloseSidebar) {
+              onCloseSidebar();
+            }
+          }}
+          style={{
+            width: "100%",
+            textAlign: "left",
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            padding: "8px 9px",
+            borderRadius: 9,
+            border: !selectedPdf
+              ? "0.5px solid rgba(108,99,255,0.42)"
+              : "0.5px solid transparent",
+            background: !selectedPdf
+              ? "rgba(108,99,255,0.14)"
+              : "transparent",
+            cursor: "pointer",
+            transition: "all .16s",
+            fontFamily: "inherit",
+            marginBottom: 12,
+          }}
+          onMouseEnter={(e) => {
+            if (selectedPdf)
+              e.currentTarget.style.background = "rgba(255,255,255,0.05)";
+          }}
+          onMouseLeave={(e) => {
+            if (selectedPdf)
+              e.currentTarget.style.background = "transparent";
+          }}
+        >
+          <div
+            style={{
+              width: 30,
+              height: 34,
+              borderRadius: 7,
+              background: !selectedPdf ? "rgba(108,99,255,0.18)" : "rgba(255,255,255,0.05)",
+              border: !selectedPdf ? "0.5px solid rgba(108,99,255,0.38)" : "0.5px solid rgba(255,255,255,0.08)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+            }}
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke={!selectedPdf ? "#a78bfa" : "rgba(255,255,255,0.45)"}
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+          </div>
+
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p
+              style={{
+                fontSize: 12.5,
+                fontWeight: 500,
+                color: !selectedPdf
+                  ? "rgba(200,185,255,0.95)"
+                  : "rgba(255,255,255,0.7)",
+                margin: 0,
+              }}
+            >
+              General Chat
+            </p>
+            <p
+              style={{
+                fontSize: 10.5,
+                color: "rgba(255,255,255,0.27)",
+                margin: "1px 0 0",
+              }}
+            >
+              Ask AI anything
+            </p>
+          </div>
+
+          {!selectedPdf && (
+            <div
+              style={{
+                width: 5,
+                height: 5,
+                borderRadius: "50%",
+                background: "#a78bfa",
+                flexShrink: 0,
+              }}
+            />
+          )}
+        </button>
+
         <p
           style={{
             fontSize: 10,
@@ -322,7 +449,12 @@ export default function UploadPanel({
             return (
               <button
                 key={pdf.id}
-                onClick={() => setSelectedPdf(pdf)}
+                onClick={() => {
+                  setSelectedPdf(pdf);
+                  if (isMobile && onCloseSidebar) {
+                    onCloseSidebar();
+                  }
+                }}
                 style={{
                   width: "100%",
                   textAlign: "left",

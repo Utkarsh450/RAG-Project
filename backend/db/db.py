@@ -2,7 +2,7 @@ from pymongo import MongoClient
 import os
 
 client = MongoClient(
-    os.getenv("MONGODB_URI")
+    os.getenv("MONGO_URI")
 )
 
 try:

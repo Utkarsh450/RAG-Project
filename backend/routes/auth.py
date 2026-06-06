@@ -223,7 +223,7 @@ async def google_callback(
     )
 
     frontend_url = (
-        "https://darling-zabaione-a9ef22.netlify.app"
+        "https://rag-project-lac.vercel.app"
         f"/oauth-success?"
         f"access_token={access_token}"
         f"&refresh_token={refresh_token}"
@@ -338,7 +338,7 @@ async def github_callback(
     )
 
     frontend_url = (
-        "https://darling-zabaione-a9ef22.netlify.app"
+        "https://rag-project-lac.vercel.app"
         f"/oauth-success?"
         f"access_token={access_token}"
         f"&refresh_token={refresh_token}"
